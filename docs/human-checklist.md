@@ -1,17 +1,17 @@
 # SharedKanban human checklist
 
-This is the only SharedKanban document you must personally act on. It lists every one-time action that truly needs a human: a password, a fingerprint, a payment card, a physical plug, or a decision that is yours. Everything else is done by Claude in the cloud (writing code and documents) or by a Cowork session on the Mac mini (building, testing, installing and operating), as docs/operator-playbook.md describes and the decision register fixes (D20). Secrets are never typed into chat: when a step produces a password or a key file, this list says where it goes on the Mac mini, and a Cowork session names the file and waits rather than asking for the value. Each action is written as numbered taps with the menu names you will see; no knowledge of Apple's developer tools is assumed. "Needed before phase N" means the review of phase N cannot pass without it.
+This is the only SharedKanban document you must personally act on. It lists every one-time action that truly needs a human: a password, a fingerprint, a payment card, a physical plug, or a decision that is yours. Everything else is done by Claude in the cloud (writing code and documents) or by a Cowork session on the Mac mini (building, testing, installing and operating), as docs/operator-playbook.md describes (D20). Secrets are never typed into chat: when a step produces a password or a key file, this list says where it goes on the Mac mini, and a Cowork session names the file and waits rather than asking for the value. Each action is numbered taps with the menu names you will see; no knowledge of Apple's developer tools is assumed. "Needed before phase N" means that phase's review cannot pass without it.
 
 ## Summary
 
 | # | Action | Needed before phase | Estimated minutes | Can a Cowork session sit beside you and do most of it? |
 |---|---|---|---|---|
 | 1 | Sign in with your Apple Account on the Mac mini and in Xcode; accept the Xcode license | 1 | 15 | Yes |
-| 2 | Enroll in the Apple Developer Program; accept the agreements in App Store Connect (start now; takes days) | 3 (start during 1) | 20, plus waiting days | No |
-| 3 | Approve the App ID capabilities; create and download the three keys; put each .p8 where Cowork says | 3 (APNs key used in 8, App Store Connect key in 11) | 30 | Yes |
+| 2 | Enroll in the Apple Developer Program; accept the App Store Connect agreements (start now; takes days) | 3 (start during 1) | 20, plus waiting days | No |
+| 3 | Approve the App ID capabilities; create and download the three keys; put each .p8 where Cowork says | 3 (keys also used in 8 and 11) | 30 | Yes |
 | 4 | iPhone and iPad: Developer Mode, trust the Mac by cable, TestFlight invitation, allow notifications and Sign in with Apple | 3 (TestFlight in 11) | 20 per device | No |
 | 5 | Tailscale account; sign in on the Mac mini and both devices; enable HTTPS certificates; disable key expiry for the Mac mini | 10 | 25 | Yes |
-| 6 | Type the macOS admin password when Docker Desktop, Tailscale, the service-user auto-login, the FileVault choice and the energy settings ask | 1 and 10 | 10, spread over several moments | Yes |
+| 6 | Type the macOS admin password when Docker Desktop, Tailscale, auto-login, FileVault and energy settings ask | 1 and 10 | 10, in several moments | Yes |
 | 7 | Plug in a UPS and an external backup SSD; confirm iCloud Drive has enough space | 10 | 20, plus shopping | No |
 | 8 | Save the restic password and the secrets-image passphrase in your password manager | 10 | 10 | Yes |
 | 9 | Optional: let the cloud session compile Swift (edit the Claude cloud environment) | 1 or any time | 5 | No |
@@ -24,7 +24,7 @@ Why: Xcode can only build and sign the app for real devices when it is signed in
 
 When: before the Phase 1 review.
 
-Before you start: the Mac mini switched on, your Apple Account email and password, and your iPhone nearby for the two-factor code. Apple now says Apple Account; older screens say Apple ID. Use the same account for every Apple step in this list.
+Before you start: the Mac mini switched on, your Apple Account (Apple ID) email and password, and your iPhone nearby for the two-factor code. Use the same account for every Apple step in this list.
 
 Steps:
 
@@ -39,9 +39,9 @@ Steps:
 9. Click + at the bottom left, choose Apple Account, click Continue, sign in, approve the code again if asked.
 10. Tell Cowork "signed in".
 
-What to hand back: nothing. The password and the code go only into Apple's own windows. The signed-in session is held in the Mac mini login keychain, which Cowork keeps unlocked for signing (D20).
+What to hand back: nothing. The password and the code go only into Apple's own windows; the session lives in the Mac mini login keychain, which Cowork keeps unlocked for signing (D20).
 
-How you know it worked: System Settings shows your name at the top of the sidebar, Xcode's Accounts list shows your email with a team under it, and Cowork reports a build that asked for nothing. Xcode may occasionally ask you to sign in again; Cowork will say when (D20).
+How you know it worked: System Settings shows your name at the top of the sidebar, Xcode's Accounts list shows your email with a team under it, and Cowork reports a build that asked for nothing. Xcode may occasionally ask again; Cowork will say when (D20).
 
 ## 2. Enroll in the Apple Developer Program
 
@@ -57,50 +57,49 @@ Steps:
 2. Tap Account and sign in.
 3. Tap Join the Apple Developer Program, then Enroll.
 4. Choose Individual and confirm your name and address.
-5. If Apple asks you to confirm your identity, follow its prompts; this may happen inside the Apple Developer app on the iPhone, installed from the App Store.
+5. If Apple asks you to confirm your identity, follow its prompts (sometimes inside the Apple Developer app on the iPhone).
 6. Read the license agreement, tick the box, tap Continue.
 7. Pay the yearly fee with your card.
 8. Wait for the email saying your membership is active. This can take hours or days.
 9. Then go to appstoreconnect.apple.com and sign in.
-10. If a yellow banner says an agreement needs your attention, open it, tick the box and tap Agree. Repeat until no banner remains; only the free-apps agreement is required for release 1.
-11. If developer.apple.com shows a banner about an updated license agreement, accept it too.
-12. Tell Cowork "enrolled".
+10. If a yellow banner says an agreement needs your attention, open it, tick the box and tap Agree. Repeat until no banner remains; only the free-apps agreement is needed.
+11. Tell Cowork "enrolled".
 
-What to hand back: nothing secret. If Cowork asks for your Team ID, it is a ten-character code on the Membership details page and is fine to read out.
+What to hand back: nothing secret. Your Team ID (a ten-character code on the Membership page) is not a secret and is fine to read out.
 
 How you know it worked: the Membership details page shows "Apple Developer Program" with an expiry date one year away, and App Store Connect shows no pending banners.
 
 ## 3. Approve the App ID capabilities and create the three keys
 
-Why: the app needs three switches on its App ID (Sign in with Apple, Push Notifications, Associated Domains) and three keys only a human may create: one lets the server verify Sign in with Apple (D09, D16), one lets it send push notifications (D07), and one lets Cowork upload builds to TestFlight unattended (D20).
+Why: the app needs three switches on its App ID and three keys only a human may create: one lets the server verify Sign in with Apple (D09), one lets it send push notifications (D07), and one lets Cowork upload to TestFlight unattended (D20).
 
-When: before the Phase 3 review for the capabilities and the Sign in with Apple key. The APNs key is used from Phase 8 and the App Store Connect key from Phase 11; doing all three in one sitting is simplest. Cowork asks when it is ready.
+When: before the Phase 3 review. The APNs key is used from Phase 8 and the App Store Connect key from Phase 11, but one sitting is simplest. Cowork asks when it is ready.
 
-Before you start: action 2 complete, Cowork running on the Mac mini with the browser open, and you at the Mac mini so downloads land there. Each key can be downloaded exactly once; if a file is lost, revoke that key and create a new one.
+Before you start: action 2 complete, Cowork running on the Mac mini with the browser open, and you at the Mac mini so downloads land there. Each key downloads exactly once; if a file is lost, revoke that key and create a new one.
 
 Steps:
 
-1. When Xcode (driven by Cowork) asks to register the App ID or enable a capability, click Enable or Register. If Cowork instead opens developer.apple.com, Certificates, Identifiers & Profiles, Identifiers: open the SharedKanban App ID, tick Sign in with Apple, Push Notifications and Associated Domains, click Save, then Confirm.
+1. When Xcode (driven by Cowork) asks to register the App ID or enable a capability, click Enable or Register. If Cowork instead opens developer.apple.com, Certificates, Identifiers & Profiles, Identifiers: open the SharedKanban App ID, tick Sign in with Apple, Push Notifications and Associated Domains, click Save, Confirm.
 2. In the sidebar click Keys, then +.
 3. Name it SharedKanban Sign in with Apple, tick Sign in with Apple, click Configure, choose the SharedKanban App ID as the primary App ID, click Save, Continue, Register.
 4. Click Download. Leave the file in Downloads; do not open it.
 5. Click Keys and + again. Name it SharedKanban APNs, tick Apple Push Notifications service (APNs), click Continue, Register, Download.
 6. Go to appstoreconnect.apple.com, click Users and Access, the Integrations tab (older layouts say Keys), App Store Connect API, Team Keys.
 7. Click +, name it SharedKanban Cowork, choose the access level App Manager, click Generate, then Download.
-8. Tell Cowork "three files downloaded". Cowork moves them from Downloads into the secrets folder outside the repository and names them `sign-in-with-apple.p8`, `apns.p8` and `app-store-connect-api.p8`. The folder is `~/SharedKanban/secrets/` until Phase 10 and `/Users/kanban/SharedKanban/secrets/` after it (D11, D21).
-9. Leave the Keys pages open on screen: Cowork reads the Key ID, Issuer ID and Team ID from them into the `.env` file in the same folder. If you downloaded on another device, AirDrop the files to the Mac mini first.
+8. Tell Cowork "three files downloaded". Cowork moves them from Downloads into the secrets folder outside the repository, named `sign-in-with-apple.p8`, `apns.p8` and `app-store-connect-api.p8`: `~/SharedKanban/secrets/` until Phase 10, `/Users/kanban/SharedKanban/secrets/` after it (D11, D21). If you downloaded on another device, AirDrop the files to the Mac mini first.
+9. Leave the Keys pages open: Cowork reads the Key ID, Issuer ID and Team ID from them into the `.env` file in the same folder.
 
-What to hand back: never a .p8 file's contents, and nothing in chat. The files live only in the secrets folder and in the encrypted secrets image on the backup SSD (D21).
+What to hand back: never a .p8 file's contents, and nothing in chat. The files live only in the secrets folder and the encrypted secrets image on the backup SSD (D21).
 
 How you know it worked: the Keys page lists two keys, the App Store Connect API page lists the third, Downloads holds no `AuthKey` file, and Cowork reports that `.env` names all three key ids.
 
 ## 4. Prepare the iPhone and the iPad
 
-Why: a Mac can only install development builds on a device whose owner has enabled Developer Mode and trusted that Mac once; TestFlight, notifications and Sign in with Apple each ask the person holding the device (D20).
+Why: a Mac can only install builds on a device that has Developer Mode on and has trusted that Mac once; TestFlight, notifications and Sign in with Apple each ask the person holding the device (D20).
 
 When: Developer Mode and trust before the Phase 3 review; notifications during Phase 8; the TestFlight invitation during Phase 11. Repeat on each device.
 
-Before you start: the device unlocked and on iOS or iPadOS 18 or later (verify at Phase 1, D20), its passcode, a USB-C cable that fits both ends, and Cowork saying it is ready.
+Before you start: the device unlocked, on iOS or iPadOS 18 or later (verify at Phase 1, D20), its passcode, a USB-C cable that fits both ends, and Cowork saying it is ready.
 
 Steps:
 
@@ -109,17 +108,17 @@ Steps:
 3. Open Settings, Privacy & Security, scroll to the bottom, tap Developer Mode (the row appears only after step 2).
 4. Turn it on, tap Restart, and after the restart tap Turn On and type the passcode.
 5. Tell Cowork "device ready" and keep the cable connected while it installs the build.
-6. When the app shows Sign in with Apple, tap it, then Continue with Face ID or Touch ID. Share My Email or Hide My Email are both fine; the app does not depend on the email (D04).
+6. When the app shows Sign in with Apple, tap it, then Continue with Face ID or Touch ID. Share My Email or Hide My Email are both fine (D04).
 7. When the app explains why it wants notifications and iOS asks "Allow notifications?", tap Allow (D07).
 8. When the TestFlight invitation arrives (Phase 11), install TestFlight from the App Store if needed, open the link, tap Accept, then Install.
 
 What to hand back: nothing. The passcode and Face ID stay on the device.
 
-How you know it worked: Privacy & Security shows Developer Mode on; the SharedKanban icon is on the home screen and opens to the board after sign-in; Settings, Notifications lists SharedKanban as allowed; in Phase 11 TestFlight lists SharedKanban as installed.
+How you know it worked: Privacy & Security shows Developer Mode on; SharedKanban opens to the board after sign-in; Settings, Notifications lists it as allowed; in Phase 11 TestFlight lists it as installed.
 
 ## 5. Set up Tailscale
 
-Why: release-1 production runs over a private Tailscale network between the Mac mini and the two devices, so nothing is exposed on the public internet and no domain is needed (D10). The two admin-console switches give the Mac mini a trusted HTTPS certificate and keep it connected without re-authentication (D10).
+Why: release-1 production runs over a private Tailscale network between the Mac mini and the two devices, so nothing is on the public internet and no domain is needed; the two admin-console switches give the Mac mini a trusted HTTPS certificate and keep it connected without re-authentication (D10).
 
 When: before the Phase 10 review. Earlier phases use the home network only.
 
@@ -128,21 +127,21 @@ Before you start: an email address for the account, the Mac mini with Cowork run
 Steps:
 
 1. Go to tailscale.com, click Get started, and sign up with the login provider you prefer (your Apple Account or Google). Use the same provider on every device.
-2. On the Mac mini, after Cowork installs Tailscale, click Log in in the Tailscale menu-bar icon, then Connect in the browser page. If macOS asks to allow a system extension or VPN configuration, click Allow and type the admin password.
+2. On the Mac mini, after Cowork installs Tailscale, click Log in in its menu-bar icon, then Connect in the browser page. If macOS asks to allow a system extension or VPN configuration, click Allow and type the admin password.
 3. On the iPhone, install Tailscale from the App Store, open it, tap Log in, sign in, and tap Allow when iOS asks to add a VPN configuration.
-4. In the Tailscale app's Settings turn VPN On Demand on, so the connection returns by itself (D10).
+4. In the Tailscale app's Settings turn VPN On Demand on (D10).
 5. Repeat steps 3 and 4 on the iPad.
 6. On the Mac mini, with Cowork guiding, open login.tailscale.com, click the DNS tab, find HTTPS Certificates, click Enable HTTPS, confirm.
 7. Click the Machines tab, find the Mac mini row, open its three-dot menu, choose Disable key expiry, confirm.
-8. Tell Cowork "Tailscale done". Do not enable Funnel: it makes the server reachable from the public internet and is turned on only if you ever want access without Tailscale, for example from claude.ai (D10, D15). If that day comes, Cowork opens the Funnel prompt and you click Enable.
+8. Tell Cowork "Tailscale done". Do not enable Funnel: it puts the server on the public internet and is turned on only if you ever want access without Tailscale, for example from claude.ai (D10, D15); then Cowork opens the Funnel prompt and you click Enable.
 
-What to hand back: nothing. Your tailnet hostname is not a secret, but Cowork reads it on the Mac mini, and it never enters the repository (D10).
+What to hand back: nothing. Cowork reads the tailnet hostname on the Mac mini; it never enters the repository (D10).
 
-How you know it worked: the Machines page lists all three devices, the Mac mini row says "Expiry disabled", the DNS page shows HTTPS Certificates enabled, and Cowork's Phase 10 results note shows the app reaching the server over https from both devices.
+How you know it worked: the Machines page lists all three devices, the Mac mini row says "Expiry disabled", the DNS page shows HTTPS Certificates enabled, and the Phase 10 results note shows both devices reaching the server over https.
 
 ## 6. Type the macOS admin password when asked
 
-Why: installing Docker Desktop and Tailscale and creating the auto-login service user change system settings that macOS only accepts from a human typing the admin password (D11, D20, D21).
+Why: installing Docker Desktop and Tailscale and creating the auto-login service user change system settings that macOS accepts only from a human typing the admin password (D11, D21).
 
 When: Phase 1 (Docker Desktop's first launch, the Xcode license) and Phase 10 (service user, auto-login, FileVault, energy and update settings).
 
@@ -150,19 +149,19 @@ Before you start: the Mac mini admin password, and your FileVault decision (step
 
 Steps:
 
-1. Whenever a macOS window says "wants to make changes" or "Enter your password to allow this", type the admin password and click OK. Cowork warns you before each one.
+1. Whenever a macOS window says "wants to make changes" or asks for your password, type the admin password and click OK. Cowork warns you before each one.
 2. Docker Desktop, first launch: click Accept on its terms, then Allow for privileged access, then type the password.
 3. Tailscale: if System Settings, General, Login Items & Extensions shows a blocked extension, click Allow.
-4. Service user: when Cowork creates the user kanban in System Settings, Users & Groups, type the admin password, then choose a password for kanban and store it in your password manager (action 8).
+4. Service user: when Cowork creates the user kanban in System Settings, Users & Groups, type the admin password, choose a password for kanban, and store it in your password manager.
 5. Auto-login: in Users & Groups, set Automatically log in as to kanban and type its password (D21).
 6. Energy: in System Settings, Energy, turn on Start up automatically after a power failure and Prevent automatic sleeping when the display is off; Cowork sets the five-minute shutdown on battery (D21).
-7. FileVault: in Privacy & Security, FileVault, leave it Off unless you want the disk encrypted. Off lets the Mac mini restart on its own after a power cut; On means every full restart waits for someone to type a password (D21).
+7. FileVault: in Privacy & Security, FileVault, leave it Off unless you want the disk encrypted. Off lets the Mac mini restart by itself after a power cut; On means every full restart waits for a typed password (D21).
 8. Software Update: under Automatic Updates keep security responses on and automatic macOS upgrades off (D21).
 9. In your Phase 10 reply write "FileVault off" or "FileVault on".
 
 What to hand back: only the FileVault decision, in the phase reply. Passwords go only into macOS windows and your password manager.
 
-How you know it worked: Docker Desktop and Tailscale show as running, the Mac mini logs in as kanban by itself after a restart, and the Phase 10 results note records your FileVault choice.
+How you know it worked: Docker Desktop and Tailscale show as running, the Mac mini logs in as kanban by itself after a restart, and the Phase 10 results note records your choice.
 
 ## 7. Plug in a UPS and an external SSD, and check iCloud Drive
 
@@ -170,7 +169,7 @@ Why: the Mac mini is the only server, so power protection and a local encrypted 
 
 When: before the Phase 10 review.
 
-Before you start: a UPS with a USB port, an external SSD (Cowork tells you the minimum size before you buy), its cable, and your Apple Account signed in to iCloud on the Mac mini.
+Before you start: a UPS with a USB port, an external SSD (Cowork tells you the minimum size before you buy), its cable, and iCloud signed in on the Mac mini.
 
 Steps:
 
@@ -228,7 +227,7 @@ How you know it worked: the Phase 1 cloud session reports that `swift test` ran 
 
 ## 10. Optional, later: a Backblaze B2 account and the Claude connection token
 
-Why: B2 is the off-site backup fallback only if a week of monitored runs shows iCloud Drive unreliable (D21). The Claude connection is normally paired by Cowork with a token it creates on the Mac mini, so no human step exists (D15).
+Why: B2 is the off-site backup fallback only if a week of monitored runs shows iCloud Drive unreliable (D21). The Claude connection is normally paired by Cowork with a token it creates on the Mac mini, so normally no human step exists (D15).
 
 When: only if a Phase 9 or Phase 10 results note asks for it.
 
@@ -236,7 +235,7 @@ Before you start: the results note that asks; for B2, a payment card.
 
 Steps:
 
-1. B2: create a Backblaze account on its public site, add a card, tell Cowork "B2 ready". Cowork creates the bucket and key with you in the browser and files the key in the secrets folder.
+1. B2: create a Backblaze account, add a card, tell Cowork "B2 ready". Cowork creates the bucket and key with you and files the key in the secrets folder.
 2. Connection token: if Cowork cannot paste the token into the Claude client, open the client's settings on the Mac mini, paste the token Cowork shows on the Mac mini screen into the field it names, click Save. The token is shown once; never copy it into chat (D15).
 
 What to hand back: "B2 ready" or "token pasted".

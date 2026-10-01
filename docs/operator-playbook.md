@@ -1,6 +1,6 @@
 # SharedKanban operator playbook
 
-Who does what for every phase of SharedKanban, written for an owner who wants to be involved as little as possible and for the Claude sessions that implement Phases 1 to 11 without guessing. It applies docs/decisions/decision-register.md (cited inline as D01 to D22) and the phase table in the owner's brief. Step-by-step human instructions live in docs/human-checklist.md; architecture in docs/architecture.md; repository rules in CLAUDE.md.
+Who does what for every phase of SharedKanban, written for an owner who wants to be involved as little as possible and for the Claude sessions that implement Phases 1 to 11 without guessing. It applies docs/decisions/decision-register.md (cited inline as D01 to D22) and the phase table in the owner's brief. Step-by-step human instructions live in docs/human-checklist.md, the architecture in docs/architecture.md, the repository rules in CLAUDE.md.
 
 ## 1. The three executors
 
@@ -10,7 +10,7 @@ Who does what for every phase of SharedKanban, written for an owner who wants to
 | (B) Mac mini Cowork: Claude Cowork sessions the owner directs on the Mac mini | Install and run Xcode and tools; `xcodebuild build/test` on simulators; `xcrun simctl` and `devicectl`; screenshots; Docker Desktop or OrbStack and Compose; native `swift test`; migrations; Tailscale, restic, cloudflared; launchd; restore drills; drive a browser while the human types credentials; commit and push the results note (D20). | Type Apple ID passwords or 2FA codes; pay; accept legal agreements; physically connect, trust or unlock devices; create third-party accounts; tap a phone. |
 | (C) Human: the owner | Read a phase review and reply "approved" or list changes; do the one-time actions in docs/human-checklist.md; hold a phone when a test needs a finger. | Nothing else is asked. |
 
-Rule (D20): the cloud session writes everything and tests what Linux can test; the Mac mini session builds, tests and operates; the human reads and approves.
+Rule (D20): the cloud writes everything and tests what Linux can test; the Mac mini builds, tests and operates; the human reads and approves.
 
 ## 2. Handoff protocol
 
@@ -71,7 +71,7 @@ Today the cloud session writes the Vapor server and SharedDTOs but cannot build 
    - swiftly (the swift.org installer): download `swiftly-$(uname -m).tar.gz` from `download.swift.org/swiftly/linux/`, run `./swiftly init --assume-yes`, `swiftly install 6.x`, and add swiftly's bin directory to `PATH`.
    - Toolchain tarball: download the Ubuntu 24.04 tarball for the pinned Swift 6.x release from `download.swift.org/swift-6.x-release/ubuntu2404/`, extract it, and add its `usr/bin` to `PATH`.
    Both need the Linux toolchain's apt dependencies (binutils, libcurl4-openssl-dev, libxml2, zlib1g-dev and the rest of the list on swift.org), so the script also runs `apt-get install`; if apt mirrors are blocked, the Phase 1 cloud session says which domain to add.
-4. Save. The Phase 1 cloud session then proves it by running `swift test` in `shared/` and `server/` against the local PostgreSQL started with `pg_ctlcluster` (D11, D20).
+4. Save. The Phase 1 cloud session proves it by running `swift test` in `shared/` and `server/` against the local PostgreSQL started with `pg_ctlcluster` (D11, D20).
 
 Skipping this blocks nothing.
 
@@ -83,7 +83,7 @@ The done signal is always the human's reply on docs/reviews/phase-N-review.md; t
 
 | Deliverable | Exit gate | Cloud does | Mac mini Cowork does | Human does | Done signal |
 |---|---|---|---|---|---|
-| Decision register D01 to D22, ADRs, product, architecture, design-system, threat-model and API docs, this playbook, docs/human-checklist.md, CLAUDE.md | Decisions reviewed; no application code | Writes every document on `phase-0-docs`, opens the PR, writes `docs/reviews/phase-0-review.md` | Nothing | Read the review, reply "approved" or list changes | Reply; cloud merges and tags `phase-0-done` |
+| Decision register D01 to D22, ADRs, product, architecture, design-system, threat-model and API docs, this playbook, docs/human-checklist.md, CLAUDE.md | Decisions reviewed; no application code | Writes every document on `phase-0-docs`, opens the PR, writes the review | Nothing | Read the review, reply "approved" or list changes | Reply; cloud merges and tags `phase-0-done` |
 
 ### Phase 1: Repository scaffold
 
@@ -203,7 +203,7 @@ Human must be present: no. The concurrent and reconnect scenarios run on two sim
 
 ```text
 You are the Mac mini session for SharedKanban, Phase 6. First read CLAUDE.md, docs/operator-playbook.md section 2, and D01, D06, D08 and D13 in docs/decisions/decision-register.md.
-1. In ~/Developer/SharedKanban check out phase-6-drag-realtime and pull. Start the server with the Compose dev profile. Run the server tests (same-card concurrent moves, two cards into one gap, neighbors gone, renormalization, subscribe without membership, duplicate delivery, gap detection, revoke mid-connection, reconnect backoff) and the iOS tests.
+1. In ~/Developer/SharedKanban check out phase-6-drag-realtime and pull. Start the server with the Compose dev profile. Run the server tests (concurrent moves, two cards into one gap, neighbors gone, renormalization, subscribe without membership, duplicate delivery, gap detection, revoke mid-connection, reconnect backoff) and the iOS tests.
 2. Boot an iPhone and an iPad simulator as two fake accounts on one Home Projects board. Run the branch's two-device script: move different cards simultaneously; move the same card from both and confirm one snaps back with the banner; cut the network on one, queue three edits, restore it and confirm replay; remove the member from the other and confirm the socket closes and the board disappears.
 3. Record whether edge-dwell paging survives (D01 item 5; if it cancels the drag, note that the pills remain the cross-column path), whether URLSessionWebSocketTask sends the Authorization header on upgrade, and what happens 5 seconds after backgrounding.
 4. Screenshot the drag preview, insertion bar, WIP warning and rejection banner into docs/reviews/phase-6-screenshots/.
